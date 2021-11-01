@@ -1,0 +1,72 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Mineral Exploration, Expenditure by mineral sought",
+  "data": {"url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/mineral_types.csv"},
+
+  "vconcat":[
+
+  {
+  "data": {"url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/mineral_types.csv"},
+  "width":500,
+  "height": 600,
+
+  "params":[
+    {
+    "name": "mineral_highlight",
+    "select": {"type": "point", "fields": ["Mineral Type"]},
+    "bind": "legend"  }
+    ],   
+
+  "mark": "line",
+
+    "encoding": {
+      "x": {"timeUnit":"yearmonthdate", "field": "Date", "type": "temporal", "scale": {"domain": {"param": "brush"}} ,"title": "date"},
+      "y": {"field": "Expenditure", "type": "quantitative", "title": "expenditure"},
+
+    "color": {
+      "field":"Mineral Type",
+      "type":"nominal",
+      "scale": {"scheme": "category20"}
+    },
+
+    "opacity": {
+      "condition": {"param": "mineral_highlight", "value": 0.6},
+      "value": 0.2 
+    }
+     
+    }
+  },
+
+
+  {
+    "data": {"url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/mineral_types.csv"},
+    "width": 500,
+    "height": 100,
+
+    "transform": [{
+      "aggregate": [{
+        "op": "sum",
+        "field": "Expenditure",
+        "as": "Expenditure_sum"
+      }],
+      "groupby": ["Date"]
+    }],
+
+    "mark": "bar",
+    "params": [{
+        "name": "brush",
+        "select": {"type": "interval", "encodings": ["x"]}
+    }],
+
+    "encoding": {
+        "x": {"timeUnit":"yearmonthdate", "field": "Date", "type": "temporal", "title": "date"},
+        "y": {"field": "Expenditure_sum","type": "quantitative","axis": {"tickCount": 3, "grid": false}}
+        }
+    
+    
+    }
+
+  ]
+
+}
+

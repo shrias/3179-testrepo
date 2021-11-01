@@ -1,0 +1,205 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {
+        "url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/total_exp_by_state.csv"
+        },
+
+    "vconcat": [
+    
+    {
+    "width": "container",
+    "height": 400,
+    "projection": {"type": "equirectangular"},
+    
+    "data": {
+    "url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/STE_2016_AUST%20(6).json",
+    "format": {"type": "topojson", "feature": "STE_2016_AUST"}
+    },
+
+    "transform": [
+        {
+            "lookup": "properties.STE_NAME16",
+            "from": {
+            "data": {
+                "url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/total_exp_by_state.csv"
+                },
+            "key": "State",
+            "fields": ["Total_Dep"]
+            }
+        },
+        {"calculate": "datum.Total_Dep + 0.1", "as": "Total Deposit"}       
+    ],
+
+    "mark": {"type": "geoshape"},
+    "encoding": {
+        "color": {
+            "field": "Total Deposit",
+            "type": "quantitative",
+            "scale": {"type": "log", "scheme":"bluegreen"}
+        },
+        "tooltip": [
+            {"field": "properties.STE_NAME16", "type": "nominal", "title": "State"},
+            {"field": "Total_Dep", "type": "quantitative"}
+            ]
+        }
+    },
+  
+
+    {
+  "data": {"url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/mineral_types.csv"},
+  "width":"container",
+  "height": 600,
+  "params":[
+    {
+    "name": "mineral_highlight",
+    "select": {"type": "point", "fields": ["Mineral Type"]},
+    "bind": "legend"  }
+    ],   
+  "mark": "line",
+    "encoding": {
+      "x": {"timeUnit":"yearmonthdate", "field": "Date", "type": "temporal", "scale": {"domain": {"param": "brush"}} ,"title": "date"},
+      "y": {"field": "Expenditure", "type": "quantitative", "title": "expenditure"},
+    "color": {
+      "field":"Mineral Type",
+      "type":"nominal",
+      "scale": {"scheme": "category20"}
+    },
+    "opacity": {
+      "condition": {"param": "mineral_highlight", "value": 0.6},
+      "value": 0.2 
+    }
+     
+    }
+  },
+
+
+
+
+  {
+    "data": {"url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/mineral_types.csv"},
+    "width": "container",
+    "height": 100,
+    "transform": [{
+      "aggregate": [{
+        "op": "sum",
+        "field": "Expenditure",
+        "as": "Expenditure_sum"
+      }],
+      "groupby": ["Date"]
+    }],
+    "mark": "bar",
+    "params": [{
+        "name": "brush",
+        "select": {"type": "interval", "encodings": ["x"]}
+    }],
+    "encoding": {
+        "x": {"timeUnit":"yearmonthdate", "field": "Date", "type": "temporal", "title": "date"},
+        "y": {"field": "Expenditure_sum","type": "quantitative","axis": {"tickCount": 3, "grid": false}}
+        }
+    
+    
+    },
+
+
+
+
+{
+
+    "data": {
+      "url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/expenditure_vs_meters_drilled.csv"},
+
+    "title":"average expenditure and meters drilled",
+
+    "width": "container",
+    "height": 450,
+  
+    "repeat": {
+      "layer": ["Total deposits_Expenditure", "Total deposits_Metres drilled"]
+    },
+
+    "spec": {
+      "mark": "line",
+      "encoding": {
+        "x": {
+          "field": "Date",
+          "type": "temporal",
+          "scale": {"domain": {"param": "brush"}},
+          "axis": {"title": "date"}
+
+        },
+        "y": {
+          "aggregate": "mean",
+          "field": {"repeat": "layer"},
+          "type": "quantitative",
+          "axis": {"title": "expenditure ($ millions) and meters (m)"}
+        },
+        "color": {
+          "datum": {"repeat": "layer"},
+          "type": "nominal"}
+         }
+        
+        }
+    },
+
+
+
+{
+        "data": {
+            "url": "https://raw.githubusercontent.com/shrias/3179-testrepo/main/expenditure_vs_meters_drilled.csv"},
+
+        "width": "container",
+        "height": 70,
+
+        "title":"total expenditure",
+
+        "transform": [{
+            "aggregate": [{
+              "op": "sum",
+              "field": "Total deposits_Expenditure",
+              "as": "Total deposits_Expenditure_sum"
+            }],
+            "groupby": ["Date"]
+          }],
+
+        "mark": "area",
+        "params": [{
+            "name": "brush",
+            "select": {"type": "interval", "encodings": ["x"]}
+        }],
+        "encoding": {
+            "x": {
+            "field": "Date",
+            "type": "temporal",
+            "axis": {"title": "date"}},
+            "y": {
+            "field": "Total deposits_Expenditure_sum",
+            "type": "quantitative",
+            "axis": {"title":"expenditure ($ millions)","tickCount": 3, "grid": false}}
+        }
+    },
+
+  {
+    "width": "container",
+    "height": 120,
+    "data": {
+      "values": [
+        {"category": "Onshore Drilling", "value": 9906.2},
+        {"category": "Offshore Drilling", "value": 29563.8}
+      ]
+    },
+    "mark": {"type": "arc", "innerRadius": 50},
+    "encoding": {
+      "theta": {"field": "value", "type": "quantitative"},
+      "color": {"field": "category", "type": "nominal"}
+    }
+  }
+    
+
+
+
+    ]
+}
+   
+   
+
+   
